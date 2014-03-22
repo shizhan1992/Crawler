@@ -24,7 +24,7 @@ import org.htmlparser.util.ParserException;
 
 public class AllStock {
 	static String stocklistpage = "http://guba.eastmoney.com/geguba_list.html";
-	static int stocknumber = 5;
+	static int stocknumber = 15;
 	static String[] codes = new String[stocknumber];
 	MongoDB[] db = new MongoDB[stocknumber];
 	static int stocksnumber = 0;
@@ -70,10 +70,6 @@ public class AllStock {
 	void getStock(Set<String> s) {
 		//ss = Executors.newFixedThreadPool(10);
 		
-//    	ss = new ThreadPool(10, 20, 20, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(10),
-//                new ThreadPoolExecutor.DiscardOldestPolicy());
-//    	tt = new ThreadPool(200, 1500, 20, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(100),
-//                new ThreadPoolExecutor.DiscardOldestPolicy());
     	try {
 			CrawlTime.init();
 		} catch (ParseException e) {
@@ -87,6 +83,7 @@ public class AllStock {
 //			ix++;
 //		}
 //		System.out.println(ix);
+		
 		while(it.hasNext()){
 			tt = Executors.newCachedThreadPool();
 			for(int j=0; j<stocknumber; j++){
@@ -109,7 +106,7 @@ public class AllStock {
 			}
 			while( ((ThreadPoolExecutor) tt).getActiveCount() > 0){ 
 				try {
-					Thread.sleep(20000);
+					Thread.sleep(5000);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -126,24 +123,19 @@ public class AllStock {
 			}
 			tt.shutdown();
 			
-			/*while( ((ThreadPoolExecutor) tt).getActiveCount() > 0){ 
-				System.out.println("第二遍检测");
-				System.out.println(((ThreadPoolExecutor) tt).getQueue().size());
-				System.out.println(((ThreadPoolExecutor) tt).getTaskCount());
-				try {
-					tt.notifyAll();
-					Thread.sleep(10000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}*/
 			System.out.println("-------------"+new Date()+"-------已爬股票个数："+stocksnumber+"---------------");
 		}
 	}
 	
 	public static void main(String args[]){
 			Set<String> s = GetAllStock();	
-			if(s!=null){
+//			Set<String> s = new HashSet<String>();
+//			s.add(" 000559万向");
+//			s.add(" 000001平安");
+//			s.add(" 000002万科");
+//			s.add(" 000003金田");
+//			s.add(" 000004国农");
+			if(s != null){
 				AllStock allstock = new AllStock();
 				allstock.getStock(s);
 			}

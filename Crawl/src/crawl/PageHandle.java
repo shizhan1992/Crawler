@@ -70,7 +70,7 @@ public class PageHandle {
 		return responseBody;
 	}
 	
-	public Date HandlerBody(String res){
+	public Date GetPublishDate(String res){
 		//do something about the context
 		
 		//String regex1 = "<a href=\"/shop/\\d{7}\" class=\"BL\" title=\"(.*?)\""; 
@@ -97,38 +97,45 @@ public class PageHandle {
 		//fw.close();
 		return null;
 	}   
-	public Date Handlerlastpage(String res){
-		//do something about the context
-		
-		//String regex1 = "<a href=\"/shop/\\d{7}\" class=\"BL\" title=\"(.*?)\""; 
-		//System.out.println(res);
-		//System.out.println("---------------------------------------------");
+	public Date GetUpdateTime(String res){
 		String regex1 = "zwlitxb\">(.*?)<";
 		Pattern pattern = Pattern.compile(regex1);
 		Matcher matcher = pattern.matcher(res);
-		LinkedList<String> a = new LinkedList<String>();
+		DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//		LinkedList<String> a = new LinkedList<String>();
 		while(matcher.find()){	
-			a.add(matcher.group(1));
-		}
-		if(!a.isEmpty())
-		{
-			DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");			
+//			a.add(matcher.group(1));
 			try {
-				Date updateDate = format.parse(a.getLast());
+				Date updateDate = format.parse(matcher.group(1));
 				return updateDate;
 			} catch (ParseException e) {
-				System.out.println("解析发帖时间错误");
 				e.printStackTrace();
 			}
 		}
+//		if(!a.isEmpty())
+//		{
+//			DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");			
+//			try {
+//				Date updateDate = format.parse(a.getLast());
+//				return updateDate;
+//			} catch (ParseException e) {
+//				System.out.println("解析发帖时间错误");
+//				e.printStackTrace();
+//			}
+//		}
 		
 		return null;
 	}
 	
 	public static void main(String args[]){
 		PageHandle commentpage = new PageHandle();
-		String htmlcode1 = commentpage.downloadpage("http://guba.eastmoney.com/news,000157,90193439_16.html");
-		Date tempTime1 = commentpage.Handlerlastpage(htmlcode1);
+		String frameUrl = "http://guba.eastmoney.com/news,000002,105332410.html";
+		String url = frameUrl.substring(0, frameUrl.length()-5)+",d.html";
+		System.out.println(url);
+		String htmlcode1 = commentpage.downloadpage(url);
+		Date tempTime = commentpage.GetPublishDate(htmlcode1);
+		System.out.println(tempTime);
+		Date tempTime1 = commentpage.GetUpdateTime(htmlcode1);
 		System.out.println(tempTime1);
 	}
 }

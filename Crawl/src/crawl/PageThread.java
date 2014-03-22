@@ -75,39 +75,40 @@ public class PageThread implements Runnable {
 		// 4.发表时间
 		Date publishTime = new Date();
 		PageHandle commentpage = new PageHandle();
-		String htmlcode = commentpage.downloadpage(frameUrl);
+		String htmlcode = commentpage.downloadpage(frameUrl.substring(0, frameUrl.length()-5)+",d.html");
 		if(htmlcode != null)
 		{	
-			Date tempTime = commentpage.HandlerBody(htmlcode);
-			publishTime = tempTime;
+			Date tempTime = commentpage.GetPublishDate(htmlcode);
+			if(tempTime != null)
+				publishTime = tempTime;
 		}
 		else
 			System.out.println("publishtime parser error!!!!!!!!!!!!!!!!!!!!!!");
 		tempTopic.publishDate = publishTime;
-			
+//		System.out.println(tempTopic.publishDate);
+		
 		// 5.最后回复时间
-		Date updateDate = new Date();
-			
-		long lastpage = (tempTopic.topicComment-1)/40+1;
- 		String htmlcode1 = commentpage.downloadpage(frameUrl.substring(0, frameUrl.length() - 5) + "_"
-					+ lastpage + ".html");
-		if(htmlcode1 != null)		
+		if(htmlcode != null)		
 		{
-			Date tempTime1 = commentpage.Handlerlastpage(htmlcode1);
+			Date tempTime1 = commentpage.GetUpdateTime(htmlcode);
 			if(tempTime1 != null)
-				updateDate = tempTime1;
+				tempTopic.updateDate = tempTime1;
+			else
+				tempTopic.updateDate = tempTopic.publishDate;
 		}
 		else
-			updateDate = tempTopic.publishDate;
-		tempTopic.updateDate = updateDate;
-		
+				tempTopic.updateDate = tempTopic.publishDate;
+//		System.out.println(tempTopic.updateDate);
+//		System.out.println(CrawlTime.START_TIME+"   "+CrawlTime.END_TIME);
 		//判断topic是否在2013年6月1号之后
 		if(tempTopic.updateDate.after(CrawlTime.START_TIME) && tempTopic.updateDate.before(CrawlTime.END_TIME) ){
 			//判断是否在当前爬取时间范围内
 			if(tempTopic.publishDate.after(CrawlTime.INITIAL_TIME)){
 				//System.out.println("fabiao时间--------------->"+tempTopic.updateDate);
 				//新增topic，全部爬取
-				tempTopic.getDetailComments(code,db);
+//				tempTopic.getDetailComments(code,db);
+				if(tempTopic.topicComment >3 )
+					AllStock.tt.execute( new CommentThread(tempTopic,code,db));
 				db.saveTopic(tempTopic);
 			}
 		}

@@ -102,16 +102,16 @@ public class Topic implements Serializable{
 
 
 
-	void getDetailComments(String code, MongoDB db) {
-		
-		//如果回复数大于3，将评论页依次加入线程池中运行
-		if(topicComment > 3){
-			for (int i = 0; i <= topicComment / 41; i++) {
-				AllStock.tt.execute( new CommentThread(uri.substring(0, uri.length() - 5) + "_"
-						+ (i + 1) + ".html", uri, title,code,db));
-			}
-		}
-	}
+//	void getDetailComments(String code, MongoDB db) {
+//		
+//		//如果回复数大于3，将评论页依次加入线程池中运行
+//		if(topicComment > 3){
+//			for (int i = 0; i <= topicComment / 41; i++) {
+//				AllStock.tt.execute( new CommentThread(uri.substring(0, uri.length() - 5) + "_"
+//						+ (i + 1) + ".html", uri, title,code,db));
+//			}
+//		}
+//	}
 /*
 	public void getCommentFromPage(String pageUri) {
 		try {

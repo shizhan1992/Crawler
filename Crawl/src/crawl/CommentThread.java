@@ -2,6 +2,7 @@ package crawl;
 
 import java.net.ConnectException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -13,29 +14,55 @@ import org.htmlparser.filters.TagNameFilter;
 import org.htmlparser.util.NodeList;
 
 public class CommentThread implements Runnable {
-	String pageUri;
+	String topicUri;
 	//Set<Comment> comment = null;
 	String uri = null; 
 	String title = null;
 	String code = null;
 	MongoDB db = null;
-	public CommentThread(String pageUri, String uri, String title, String code, MongoDB db){
-		this.pageUri = pageUri;
-		//this.comment = comment;
-		this.title = title;
-		this.uri = uri;
+	boolean isLastComm = false;
+//	public CommentThread(String pageUri, String uri, String title, String code, MongoDB db){
+//		this.topicUri = pageUri;
+//		//this.comment = comment;
+//		this.title = title;
+//		this.uri = uri;
+//		this.code = code;
+//		this.db = db;
+//	}
+	
+	public CommentThread(Topic tempTopic, String code, MongoDB db) {
+		this.topicUri = tempTopic.uri;
+		this.title = tempTopic.title;
 		this.code = code;
 		this.db = db;
 	}
-	
+//	public CommentThread(String uri){this.topicUri = uri;}
+//	public static void main(String args[]){
+//		DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//		try {
+//			CrawlTime.START_TIME = format.parse("2014-03-20 00:00:00");
+//		} catch (ParseException e) {
+//			e.printStackTrace();
+//		}
+//		new Thread( new CommentThread("http://guba.eastmoney.com/news,000559,104838027.html")).start();
+//	}
 	@Override
 	public void run() {
+		int pagenum = 1;
+		do{
+			String commentPage = topicUri.substring(0, topicUri.length()-5)+",d_"+pagenum+".html";
+			CrawlComment(commentPage);
+			pagenum++;
+		}while(!isLastComm);
 		
+	}
+
+	private void CrawlComment(String commentPage) {
 		try {
-			System.out.println(pageUri);
+			System.out.println(commentPage);
 			//下载评论页
 			PageHandle commentpage = new PageHandle();
-			String htmlcode = commentpage.downloadpage(pageUri);
+			String htmlcode = commentpage.downloadpage(commentPage);
 			
 			//解析页面，按特定filter提取Node
 			if(htmlcode!=null){
@@ -48,9 +75,13 @@ public class CommentThread implements Runnable {
 	              ); 
 			NodeList list = parser.extractAllNodesThatMatch(filter);
 			//System.out.println("hehe"+list.size());
-			
+			if(list.size()<40||list.size()==0){
+				isLastComm = true;
+//			
+			}
 			if(list.size()>0)
 			{
+				
 				//开始提取comments
 				for(int i = 0; i<list.size(); i++){
 					String commentStr = null;
@@ -89,23 +120,23 @@ public class CommentThread implements Runnable {
 								try {
 									commentDate = format.parse(commentDateStr);
 									//System.out.println(commentDate);
+									if(commentDate.before(CrawlTime.START_TIME)){
+										isLastComm = true;
+//										System.out.println(commentStr);
+									}
 								} catch (Exception e) {
 									//handle date error
 								}
 							}
 							
 							Publisher p = new Publisher(commentPublisher,0,0);
-//							UglyDB.publisherSet.get(code).add(p);
 							db.savePublisher(p);
 							
 							Comment tempComment = new Comment(p, commentDate,
-									this.title,commentStr,uri);
+									this.title,commentStr,topicUri);
 							
-//						    UglyDB.commentSet.get(code).add(tempComment);
 							db.saveComment(tempComment);
 							
-							//添加进topic对象的评论集合
-							//comment.add(tempComment);	
 					}
 				}
 			}
@@ -116,5 +147,7 @@ public class CommentThread implements Runnable {
 			}
 			e.printStackTrace();
 		}
+		
 	}	
+	
 }

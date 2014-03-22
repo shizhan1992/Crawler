@@ -24,12 +24,7 @@ public class StockStart implements Runnable {
 	}
 
 	public void run(){
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		tt = Executors.newFixedThreadPool(100);
+		tt = Executors.newFixedThreadPool(85);
 		url = "http://guba.eastmoney.com/list,"+code+".html";
 		getRecentTopics();
 	}
@@ -69,13 +64,16 @@ public class StockStart implements Runnable {
 							frameUrl = StockStart.gubaBaseUri + frameUrl;
 					if (frameUrl.indexOf(this.code) == -1)
 							continue;
-						
 					tt.execute(new PageThread(tag,frameUrl,code,db));
 				}
-				
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 				while( ((ThreadPoolExecutor) tt).getActiveCount() > 0 ){
 					try {
-						Thread.sleep(10000);
+						Thread.sleep(5000);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
