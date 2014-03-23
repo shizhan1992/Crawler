@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Scanner;
@@ -32,6 +33,11 @@ public class CrawlTime {
 			START_TIME = format.parse("2014-03-01 00:00:00");
 		END_TIME   = new Date();
 		writefile(path+name, format.format(END_TIME));
+		
+		Calendar cal = Calendar.getInstance(); 
+	    cal.setTime(END_TIME); 
+	    cal.add(Calendar.HOUR_OF_DAY, 6);
+	    END_TIME = cal.getTime(); 		
 	}
 	public void tomorrow(String code){
 		START_TIME = END_TIME;		
