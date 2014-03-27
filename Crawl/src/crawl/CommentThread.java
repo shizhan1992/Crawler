@@ -20,6 +20,7 @@ public class CommentThread implements Runnable {
 	String title = null;
 	String code = null;
 	MongoDB db = null;
+	CrawlTime crawltime = null;
 	boolean isLastComm = false;
 //	public CommentThread(String pageUri, String uri, String title, String code, MongoDB db){
 //		this.topicUri = pageUri;
@@ -30,11 +31,12 @@ public class CommentThread implements Runnable {
 //		this.db = db;
 //	}
 	
-	public CommentThread(Topic tempTopic, String code, MongoDB db) {
+	public CommentThread(Topic tempTopic, String code, MongoDB db, CrawlTime crawltime) {
 		this.topicUri = tempTopic.uri;
 		this.title = tempTopic.title;
 		this.code = code;
 		this.db = db;
+		this.crawltime = crawltime;
 	}
 //	public CommentThread(String uri){this.topicUri = uri;}
 //	public static void main(String args[]){
@@ -120,7 +122,7 @@ public class CommentThread implements Runnable {
 								try {
 									commentDate = format.parse(commentDateStr);
 									//System.out.println(commentDate);
-									if(commentDate.before(CrawlTime.START_TIME)){
+									if(commentDate.before(crawltime.START_TIME)){
 										isLastComm = true;
 //										System.out.println(commentStr);
 									}

@@ -23,16 +23,18 @@ public class PageThread implements Runnable {
 	String frameUrl = null;
 	String code = null;
 	MongoDB db = null;
+	CrawlTime crawltime = null;
 	static long topicCount = 0;
 	static ConcurrentHashMap<String, Integer> OtherDateT = new ConcurrentHashMap<String, Integer>();
 	public PageThread() {
 	}
 	
-	public PageThread(TagNode tag,String frameUrl,String code,MongoDB db) {
+	public PageThread(TagNode tag,String frameUrl,String code,MongoDB db, CrawlTime crawltime) {
 		this.tag = tag;				//当前topic标签
 		this.frameUrl = frameUrl;	//topic链接
 		this.code = code;
 		this.db = db;
+		this.crawltime = crawltime;
 	}
 
 	@Override
@@ -101,14 +103,14 @@ public class PageThread implements Runnable {
 //		System.out.println(tempTopic.updateDate);
 //		System.out.println(CrawlTime.START_TIME+"   "+CrawlTime.END_TIME);
 		//判断topic是否在2013年6月1号之后
-		if(tempTopic.updateDate.after(CrawlTime.START_TIME) && tempTopic.updateDate.before(CrawlTime.END_TIME) ){
+		if(tempTopic.updateDate.after(crawltime.START_TIME) && tempTopic.updateDate.before(crawltime.END_TIME) ){
 			//判断是否在当前爬取时间范围内
-			if(tempTopic.publishDate.after(CrawlTime.INITIAL_TIME)){
+			if(tempTopic.publishDate.after(crawltime.INITIAL_TIME)){
 				//System.out.println("fabiao时间--------------->"+tempTopic.updateDate);
 				//新增topic，全部爬取
 //				tempTopic.getDetailComments(code,db);
 				if(tempTopic.topicComment >3 )
-					AllStock.tt.execute( new CommentThread(tempTopic,code,db));
+					AllStock.tt.execute( new CommentThread(tempTopic,code,db,crawltime));
 				db.saveTopic(tempTopic);
 			}
 		}

@@ -15,37 +15,38 @@ import java.util.Locale;
 import java.util.Scanner;
 
 public class CrawlTime {
-	private static DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
-	public static Date INITIAL_TIME = null;
-	public static Date START_TIME   = null;
-	public static Date END_TIME     = null;
+	public Date INITIAL_TIME = null;
+	public Date START_TIME   = null;
+	public Date END_TIME     = null;
 	
 	public static String path = "D://crawl//crawl_log//";
 	public static String name = "log.txt";
-	
-	public static void init() throws ParseException{
+	public String logname = null;
+	public void init(String code) throws ParseException{
 		INITIAL_TIME  = format.parse("2013-06-01 00:00:00");
-		String lasttime = gettime(path,name);
+		logname = code + name;
+		String lasttime = gettime(path,logname);
 		if(lasttime != null)
 			START_TIME = format.parse(lasttime);
 		else
-			START_TIME = format.parse("2014-03-01 00:00:00");
+			START_TIME = format.parse("2014-03-23 00:00:00");
 		END_TIME   = new Date();
-		writefile(path+name, format.format(END_TIME));
+		writefile(path+logname, format.format(END_TIME));
 		
-		Calendar cal = Calendar.getInstance(); 
-	    cal.setTime(END_TIME); 
-	    cal.add(Calendar.HOUR_OF_DAY, 6);
-	    END_TIME = cal.getTime(); 		
+//		Calendar cal = Calendar.getInstance(); 
+//	    cal.setTime(END_TIME); 
+//	    cal.add(Calendar.HOUR_OF_DAY, 6);
+//	    END_TIME = cal.getTime(); 		
 	}
-	public void tomorrow(String code){
-		START_TIME = END_TIME;		
-		END_TIME = new Date();
-		writefile(path+name, format.format(END_TIME));
-	} 
+//	public void tomorrow(String code){
+//		START_TIME = END_TIME;		
+//		END_TIME = new Date();
+//		writefile(path+name, format.format(END_TIME));
+//	} 
 	
-	public static String gettime(String pathname, String name){
+	public String gettime(String pathname, String name){
 		File getstring = new File(pathname+name);
 		Scanner sc = null;
 		if(!getstring.exists()){
@@ -73,7 +74,7 @@ public class CrawlTime {
 		sc.close();
 		return null;
 	}
-	public static void writefile(String pathname, String endtime){
+	public void writefile(String pathname, String endtime){
 		File log = new File(pathname);
 		try {
 			FileWriter fileWriter=new FileWriter(log,true);
@@ -86,9 +87,11 @@ public class CrawlTime {
 	}
 	
 	public static void main(String args[]) throws ParseException{
-		CrawlTime.init();
-		System.out.println(CrawlTime.START_TIME);
-		System.out.println(CrawlTime.INITIAL_TIME);
-		System.out.println(CrawlTime.END_TIME);
-	}
+		for(int i = 0; i<15; i++){
+		CrawlTime crawltime = new CrawlTime();
+		crawltime.init("00000"+i);
+		System.out.println(crawltime.START_TIME);
+		System.out.println(crawltime.INITIAL_TIME);
+		System.out.println(crawltime.END_TIME);
+	}}
 }

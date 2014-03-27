@@ -1,5 +1,6 @@
 package crawl;
 
+import java.text.ParseException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -17,7 +18,8 @@ public class StockStart implements Runnable {
 	String url = null;
 	public ExecutorService tt = null;
 	static String gubaBaseUri = "http://guba.eastmoney.com/";
-	
+	CrawlTime crawltime = null;
+		
 	public StockStart( String code, MongoDB db) {
 		this.code = code;
 		this.db = db;
@@ -26,6 +28,12 @@ public class StockStart implements Runnable {
 	public void run(){
 		tt = Executors.newFixedThreadPool(85);
 		url = "http://guba.eastmoney.com/list,"+code+".html";
+		try {
+			crawltime = new CrawlTime();
+			crawltime.init(code);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
 		getRecentTopics();
 	}
 	
@@ -64,7 +72,7 @@ public class StockStart implements Runnable {
 							frameUrl = StockStart.gubaBaseUri + frameUrl;
 					if (frameUrl.indexOf(this.code) == -1)
 							continue;
-					tt.execute(new PageThread(tag,frameUrl,code,db));
+					tt.execute(new PageThread(tag,frameUrl,code,db,crawltime));
 				}
 				try {
 					Thread.sleep(2000);

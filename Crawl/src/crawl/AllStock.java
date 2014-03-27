@@ -32,7 +32,7 @@ public class AllStock {
 //	public static ExecutorService ss = null;
 	public static ExecutorService tt = null;
 	public static ThreadPool ss = null;
-	private static Set<String> GetAllStock(){
+	public static Set<String> GetAllStock(){
 		PageHandle topicpage = new PageHandle();
 		String htmlcode = topicpage.downloadpage(stocklistpage);
 		
@@ -69,34 +69,25 @@ public class AllStock {
 	
 	void getStock(Set<String> s) {
 		//ss = Executors.newFixedThreadPool(10);
-		
-    	try {
-			CrawlTime.init();
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		
 		Iterator<String> it = s.iterator();
-//		int ix = 0;
-//		while(it.hasNext()&& ix<3420){
-//			String loop = it.next();
-//			ix++;
-//		}
-//		System.out.println(ix);
 		
 		while(it.hasNext()){
 			tt = Executors.newCachedThreadPool();
+			int x = 0;
 			for(int j=0; j<stocknumber; j++){
-				String stockinfo = it.next();
-				String code = stockinfo.substring(1, 7);  
-				String name = stockinfo.substring(8,stockinfo.length());
-				System.out.println("name = "+name+"code ="+code);
-				codes[j]=code;
-				db[j] = new MongoDB();
-				db[j].initDB(code);
-				
+				if(it.hasNext()){
+					String stockinfo = it.next();
+					String code = stockinfo.substring(1, 7);  
+					String name = stockinfo.substring(8,stockinfo.length());
+					System.out.println("name = "+name+"code ="+code);
+					codes[j]=code;
+					db[j] = new MongoDB();
+					db[j].initDB(code);
+					x++;
+				}
 			}
-			for(int i=0; i<stocknumber; i++){
+			System.out.println(x);
+			for(int i=0; i<x; i++){
 				tt.execute(new StockStart(codes[i],db[i]));
 			}
 			try {
@@ -128,6 +119,7 @@ public class AllStock {
 	}
 	
 	public static void main(String args[]){
+		while(true){
 			Set<String> s = GetAllStock();	
 //			Set<String> s = new HashSet<String>();
 //			s.add(" 000559ÍòÏò");
@@ -139,5 +131,6 @@ public class AllStock {
 				AllStock allstock = new AllStock();
 				allstock.getStock(s);
 			}
+		}
 	}
 }
