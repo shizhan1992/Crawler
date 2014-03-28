@@ -2,28 +2,14 @@ package crawl;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
-import com.csvreader.CsvReader;
-import com.csvreader.CsvWriter;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-import com.google.gson.reflect.TypeToken;
 
 import jxl.Sheet;
 import jxl.Workbook;
@@ -47,8 +33,8 @@ public class SaveHistoryData {
 //			if(code.startsWith("60")){
 //			}
 //		}
-		//SaveHistoryData.getStockCsvData("000157", "20140324", "20140326");
-		SaveHistoryData.AddDataToXls("000157");
+		SaveHistoryData.getStockCsvData("000157", "20130601", "20140326");
+		//SaveHistoryData.AddDataToXls("000157");
 	}
 	public class Stockdata{
 		String status;
@@ -78,7 +64,7 @@ public class SaveHistoryData {
 	        String[][] hisdata= data.getHq();
 	        WritableWorkbook book = null;
 			try {
-				book = Workbook.createWorkbook(new File("D:/test.xls"));
+				book = Workbook.createWorkbook(new File("D:/"+code+".xls"));
 				WritableSheet sheet = book.createSheet("第一页", 0);  
 				String[] title = { "时间", "开盘", "收盘", "振幅", "涨幅",  
 		                "最低", "最高", "总手", "总金","换手率" };  
@@ -141,12 +127,12 @@ public class SaveHistoryData {
 	}
 	public static void AddDataToXls(String code){
 		 try {
-			 Workbook book = Workbook.getWorkbook(new File("D:/test.xls"));  
+			 Workbook book = Workbook.getWorkbook(new File("D:/"+code+".xls"));  
 			 Sheet sheet = book.getSheet(0);  
 			 // 获取行  
 			 int length = sheet.getRows();  
 //			 System.out.println(length);  
-			 WritableWorkbook wbook = Workbook.createWorkbook(new File("D:/test.xls"), book); // 根据book创建一个操作对象  
+			 WritableWorkbook wbook = Workbook.createWorkbook(new File("D:/"+code+".xls"), book); // 根据book创建一个操作对象  
 			 WritableSheet sh = wbook.getSheet(0);// 得到一个工作对象  
 			 SimpleDateFormat timedf = new SimpleDateFormat("yyyyMMdd");//设置日期格式
 			 String todayDate = timedf.format(new Date());

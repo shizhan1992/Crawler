@@ -44,7 +44,7 @@ public class AllStock {
 			try {
 				parser =Parser.createParser(htmlcode, "utf-8");
 				parser.setEncoding("utf-8");
-				NodeFilter frameFilter = new LinkRegexFilter("topic");
+				NodeFilter frameFilter = new LinkRegexFilter("topic,(([6903]0)|(200))");
 				list = parser.extractAllNodesThatMatch(frameFilter);
 				System.out.println(list.size());
 			}catch (ParserException e) {
