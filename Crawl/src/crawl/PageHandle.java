@@ -33,7 +33,7 @@ public class PageHandle {
 		HttpHost proxy = new HttpHost("60.190.138.151", 80, "http");
 		HttpGet httpget = new HttpGet(url);
 		RequestConfig requestConfig = RequestConfig.custom()
-		//.setProxy(proxy)
+		.setProxy(proxy)
 		.setConnectTimeout(30000)
 		.setConnectionRequestTimeout(30000)
 		.setSocketTimeout(30000)

@@ -27,7 +27,7 @@ public class AllStock {
 	static int stocknumber = 15;
 	static String[] codes = new String[stocknumber];
 	MongoDB[] db = new MongoDB[stocknumber];
-	static int stocksnumber = 0;
+	
 //	public static ExecutorService tt = null;
 //	public static ExecutorService ss = null;
 	public static ExecutorService tt = null;
@@ -68,6 +68,7 @@ public class AllStock {
 	}
 	
 	void getStock(Set<String> s) {
+		int stocksnumber = 0;
 		//ss = Executors.newFixedThreadPool(10);
 		Iterator<String> it = s.iterator();
 		
