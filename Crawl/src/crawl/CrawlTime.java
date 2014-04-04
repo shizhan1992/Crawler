@@ -21,7 +21,7 @@ public class CrawlTime {
 	public Date START_TIME   = null;
 	public Date END_TIME     = null;
 	
-	public static String path = "D://crawl//crawl_log1//";
+	public static String path = "D://crawl//crawl_log//";
 	public static String name = "log.txt";
 	public String logname = null;
 	public void init(String code) throws ParseException{
@@ -31,7 +31,7 @@ public class CrawlTime {
 		if(lasttime != null)
 			START_TIME = format.parse(lasttime);
 		else
-			START_TIME = format.parse("2014-01-01 00:00:00");
+			START_TIME = format.parse("2014-03-01 00:00:00");
 		END_TIME   = new Date();
 		writefile(path+logname, format.format(END_TIME));
 		

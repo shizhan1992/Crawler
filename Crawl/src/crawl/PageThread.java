@@ -71,6 +71,7 @@ public class PageThread implements Runnable {
 		//System.out.println(UglyDB.publisherSet.size());
 		Publisher p = new Publisher(topicPublisherName,0,0);
 //		UglyDB.publisherSet.get(code).add(p);
+		tempTopic.setPublisher(p);
 		db.savePublisher(p);
 		
 		
