@@ -30,7 +30,7 @@ public class PageHandle {
 	public String downloadpage(String url){
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		//("60.190.138.151", 80, 
-		HttpHost proxy = new HttpHost("60.190.138.151", 80, "http");
+		HttpHost proxy = new HttpHost("125.39.85.243", 80, "http");
 		HttpGet httpget = new HttpGet(url);
 		RequestConfig requestConfig = RequestConfig.custom()
 		.setProxy(proxy)
