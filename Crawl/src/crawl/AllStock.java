@@ -1,17 +1,13 @@
 package crawl;
 
 
-
-import java.text.ParseException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,14 +23,13 @@ public class AllStock {
 	static int stocknumber = 15;
 	static String[] codes = new String[stocknumber];
 	MongoDB[] db = new MongoDB[stocknumber];
-	
-//	public static ExecutorService tt = null;
-//	public static ExecutorService ss = null;
 	public static ExecutorService tt = null;
 	public static ThreadPool ss = null;
 	public static Set<String> GetAllStock(){
 		PageHandle topicpage = new PageHandle();
-		String htmlcode = topicpage.downloadpage(stocklistpage);
+		String htmlcode = null;
+		htmlcode = topicpage.downloadpage(stocklistpage);
+		
 		
 		if(htmlcode != null){
 			Parser parser = null;

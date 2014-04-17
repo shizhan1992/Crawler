@@ -1,14 +1,10 @@
 package crawl;
 
-import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,6 +16,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
@@ -29,7 +26,7 @@ public class PageHandle {
 
 	public String downloadpage(String url){
 		CloseableHttpClient httpclient = HttpClients.createDefault();
-		//("60.190.138.151", 80, 
+		//("60.190.138.151", 80, 125.39.85.243
 		HttpHost proxy = new HttpHost("125.39.85.243", 80, "http");
 		HttpGet httpget = new HttpGet(url);
 		RequestConfig requestConfig = RequestConfig.custom()
@@ -57,6 +54,9 @@ public class PageHandle {
 		try {
 			responseBody = httpclient.execute(httpget, responseHandler);
 			//HandlerBody(responseBody);
+			
+		}catch(HttpHostConnectException e){
+				return null;
 		} catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -65,6 +65,7 @@ public class PageHandle {
 			e.printStackTrace();
 		} finally{
 			httpget.releaseConnection();
+			
 		}
 		
 		return responseBody;

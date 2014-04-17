@@ -2,7 +2,6 @@ package crawl;
 
 import java.net.ConnectException;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -22,14 +21,8 @@ public class CommentThread implements Runnable {
 	MongoDB db = null;
 	CrawlTime crawltime = null;
 	boolean isLastComm = false;
-//	public CommentThread(String pageUri, String uri, String title, String code, MongoDB db){
-//		this.topicUri = pageUri;
-//		//this.comment = comment;
-//		this.title = title;
-//		this.uri = uri;
-//		this.code = code;
-//		this.db = db;
-//	}
+	public CommentThread(){
+	}
 	
 	public CommentThread(Topic tempTopic, String code, MongoDB db, CrawlTime crawltime) {
 		this.topicUri = tempTopic.uri;
@@ -38,16 +31,12 @@ public class CommentThread implements Runnable {
 		this.db = db;
 		this.crawltime = crawltime;
 	}
-//	public CommentThread(String uri){this.topicUri = uri;}
+
 //	public static void main(String args[]){
-//		DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//		try {
-//			CrawlTime.START_TIME = format.parse("2014-03-20 00:00:00");
-//		} catch (ParseException e) {
-//			e.printStackTrace();
-//		}
-//		new Thread( new CommentThread("http://guba.eastmoney.com/news,000559,104838027.html")).start();
+//		CommentThread test = new CommentThread();
+//		test.CrawlComment("http://guba.eastmoney.com/news,002202,107467489,d_20.html");
 //	}
+	
 	@Override
 	public void run() {
 		int pagenum = 1;
@@ -76,10 +65,9 @@ public class CommentThread implements Runnable {
 	                             new HasAttributeFilter("class","zwli clearfix") 
 	              ); 
 			NodeList list = parser.extractAllNodesThatMatch(filter);
-			//System.out.println("hehe"+list.size());
+//			System.out.println("listsize = "+list.size());
 			if(list.size()<40||list.size()==0){
 				isLastComm = true;
-//			
 			}
 			if(list.size()>0)
 			{
@@ -142,6 +130,9 @@ public class CommentThread implements Runnable {
 					}
 				}
 			}
+			}
+			else{
+				isLastComm = true;
 			}
 		} catch (Exception e) {
 			if (e instanceof ConnectException){
