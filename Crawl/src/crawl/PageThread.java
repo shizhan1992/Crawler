@@ -10,18 +10,16 @@ public class PageThread implements Runnable {
 	TagNode tag = null;
 	String frameUrl = null;
 	String code = null;
-	MongoDB db = null;
 	CrawlTime crawltime = null;
 	static long topicCount = 0;
 	static ConcurrentHashMap<String, Integer> OtherDateT = new ConcurrentHashMap<String, Integer>();
 	public PageThread() {
 	}
 	
-	public PageThread(TagNode tag,String frameUrl,String code,MongoDB db, CrawlTime crawltime) {
+	public PageThread(TagNode tag,String frameUrl,String code,CrawlTime crawltime) {
 		this.tag = tag;				//当前topic标签
 		this.frameUrl = frameUrl;	//topic链接
 		this.code = code;
-		this.db = db;
 		this.crawltime = crawltime;
 	}
 
@@ -60,7 +58,7 @@ public class PageThread implements Runnable {
 		Publisher p = new Publisher(topicPublisherName,0,0);
 //		UglyDB.publisherSet.get(code).add(p);
 		tempTopic.setPublisher(p);
-		db.savePublisher(p);
+		MongoDB.savePublisher(p,code);
 		
 		
 		// 4.发表时间
@@ -75,7 +73,7 @@ public class PageThread implements Runnable {
 		}
 		else
 			System.out.println("publishtime parser error!!!!!!!!!!!!!!!!!!!!!!");
-		tempTopic.publishDate = publishTime;
+		tempTopic.topicPublishDate = publishTime;
 //		System.out.println(tempTopic.publishDate);
 		
 		// 5.最后回复时间
@@ -85,22 +83,22 @@ public class PageThread implements Runnable {
 			if(tempTime1 != null)
 				tempTopic.updateDate = tempTime1;
 			else
-				tempTopic.updateDate = tempTopic.publishDate;
+				tempTopic.updateDate = tempTopic.topicPublishDate;
 		}
 		else
-				tempTopic.updateDate = tempTopic.publishDate;
+				tempTopic.updateDate = tempTopic.topicPublishDate;
 //		System.out.println(tempTopic.updateDate);
 //		System.out.println(CrawlTime.START_TIME+"   "+CrawlTime.END_TIME);
 		//判断topic是否在2013年6月1号之后
 		if(tempTopic.updateDate.after(crawltime.START_TIME) && tempTopic.updateDate.before(crawltime.END_TIME) ){
 			//判断是否在当前爬取时间范围内
-			if(tempTopic.publishDate.after(crawltime.INITIAL_TIME)){
+			if(tempTopic.topicPublishDate.after(crawltime.INITIAL_TIME)){
 				//System.out.println("fabiao时间--------------->"+tempTopic.updateDate);
 				//新增topic，全部爬取
 //				tempTopic.getDetailComments(code,db);
 				if(tempTopic.topicComment >3 )
-					AllStock.tt.execute( new CommentThread(tempTopic,code,db,crawltime));
-				db.saveTopic(tempTopic);
+					AllStock.tt.execute( new CommentThread(tempTopic,code,crawltime));
+				MongoDB.saveTopic(tempTopic,code);
 			}
 		}
 		else{

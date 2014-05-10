@@ -22,14 +22,13 @@ public class AllStock {
 	static String stocklistpage = "http://guba.eastmoney.com/geguba_list.html";
 	static int stocknumber = 15;
 	static String[] codes = new String[stocknumber];
-	MongoDB[] db = new MongoDB[stocknumber];
 	public static ExecutorService tt = null;
-	public static ThreadPool ss = null;
+	
+	//get all stock_code from stocklistpage
 	public static Set<String> GetAllStock(){
 		PageHandle topicpage = new PageHandle();
 		String htmlcode = null;
 		htmlcode = topicpage.downloadpage(stocklistpage);
-		
 		
 		if(htmlcode != null){
 			Parser parser = null;
@@ -43,7 +42,7 @@ public class AllStock {
 				list = parser.extractAllNodesThatMatch(frameFilter);
 				System.out.println(list.size());
 			}catch (ParserException e) {
-			e.printStackTrace();
+				e.printStackTrace();
 			}
 			for (int i = 0; i < list.size(); i++) {
 				TagNode tag = (TagNode) list.elementAt(i);
@@ -62,29 +61,31 @@ public class AllStock {
 		return null;
 	}
 	
+	//main Thread 
 	void getStock(Set<String> s) {
 		int stocksnumber = 0;
-		//ss = Executors.newFixedThreadPool(10);
 		Iterator<String> it = s.iterator();
-		
+		MongoDB.initDB("guba");
+		//loop crawling all stocks
 		while(it.hasNext()){
+			//initialize a threadpool
 			tt = Executors.newCachedThreadPool();
 			int x = 0;
-			for(int j=0; j<stocknumber; j++){
+			
+			//everytime get [stocknumber] stocks' data, preventing the heap overflowing
+ 			for(int j=0; j<stocknumber; j++){
 				if(it.hasNext()){
 					String stockinfo = it.next();
 					String code = stockinfo.substring(1, 7);  
 					String name = stockinfo.substring(8,stockinfo.length());
 					System.out.println("name = "+name+"code ="+code);
 					codes[j]=code;
-					db[j] = new MongoDB();
-					db[j].initDB(code);
 					x++;
 				}
 			}
 			System.out.println(x);
 			for(int i=0; i<x; i++){
-				tt.execute(new StockStart(codes[i],db[i]));
+				tt.execute(new StockStart(codes[i]));
 			}
 			try {
 				Thread.sleep(10000);
@@ -100,9 +101,7 @@ public class AllStock {
 			}
 			System.out.println(((ThreadPoolExecutor) tt).getActiveCount());
 			System.out.println(((ThreadPoolExecutor) tt).getActiveCount());
-			for(int i=0; i<stocknumber; i++){
-				db[i].close();
-			}
+			
 			stocksnumber+=stocknumber;
 			System.out.println("tt个数："+((ThreadPoolExecutor) tt).getActiveCount());
 			if(((ThreadPoolExecutor) tt).getActiveCount()>0){
@@ -112,6 +111,7 @@ public class AllStock {
 			
 			System.out.println("-------------"+new Date()+"-------已爬股票个数："+stocksnumber+"---------------");
 		}
+		MongoDB.close();
 	}
 	
 	public static void main(String args[]){

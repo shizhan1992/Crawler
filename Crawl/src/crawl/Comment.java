@@ -1,34 +1,29 @@
 package crawl;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import com.google.code.morphia.annotations.*;
 
-@Entity(value="Comments",noClassnameStored=true)
-@Indexes( @Index("topicTitle, publishDate") ) 
-public class Comment implements Serializable {
+public class Comment{
 	@Id
-	private String id;
-	
-	@Embedded
-	Publisher publisher;
-	
-	String topicTitle;	
+	String id;
 	Date publishDate;
-	//Comment superComment;	//¸¸»Ø¸´
-	//NewsSource newsSources;
 	String topicUrl;
 	String commentContent;
-
-	//boolean wasVisited;
+	String topicTitle;
+	Publisher publisher;
 	
-	Comment(Publisher publisher, Date publishDate, String topicTitle,String commentContent, String uri) {
-		this.publisher = publisher;
+	public Comment() {
+	}
+
+	public Comment(Date publishDate, String topicUrl, String commentContent,
+			String topicTitle, Publisher publisher) {
+		super();
 		this.publishDate = publishDate;
-		this.topicTitle = topicTitle;
+		this.topicUrl = topicUrl;
 		this.commentContent = commentContent;
-		this.topicUrl = uri;
+		this.topicTitle = topicTitle;
+		this.publisher = publisher;
 	}
 
 	public Publisher getPublisher() {

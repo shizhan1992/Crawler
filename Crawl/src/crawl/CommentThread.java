@@ -18,17 +18,15 @@ public class CommentThread implements Runnable {
 	String uri = null; 
 	String title = null;
 	String code = null;
-	MongoDB db = null;
 	CrawlTime crawltime = null;
 	boolean isLastComm = false;
 	public CommentThread(){
 	}
 	
-	public CommentThread(Topic tempTopic, String code, MongoDB db, CrawlTime crawltime) {
+	public CommentThread(Topic tempTopic, String code, CrawlTime crawltime) {
 		this.topicUri = tempTopic.uri;
 		this.title = tempTopic.title;
 		this.code = code;
-		this.db = db;
 		this.crawltime = crawltime;
 	}
 
@@ -120,12 +118,12 @@ public class CommentThread implements Runnable {
 							}
 							
 							Publisher p = new Publisher(commentPublisher,0,0);
-							db.savePublisher(p);
+							MongoDB.savePublisher(p,code);
 							
-							Comment tempComment = new Comment(p, commentDate,
-									this.title,commentStr,topicUri);
+							Comment tempComment = new Comment(commentDate,topicUri,commentStr,
+									this.title,p);
 							
-							db.saveComment(tempComment);
+							MongoDB.saveComment(tempComment,code);
 							
 					}
 				}
