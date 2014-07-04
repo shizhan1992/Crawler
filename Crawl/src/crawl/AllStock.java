@@ -1,10 +1,14 @@
 package crawl;
 
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -18,51 +22,17 @@ import org.htmlparser.nodes.TagNode;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
 
-public class AllStock {
+public class AllStock extends TimerTask{
 	static String stocklistpage = "http://guba.eastmoney.com/geguba_list.html";
 	static int stocknumber = 15;
 	static String[] codes = new String[stocknumber];
 	public static ExecutorService tt = null;
 	
-	//get all stock_code from stocklistpage
-	public static Set<String> GetAllStock(){
-		PageHandle topicpage = new PageHandle();
-		String htmlcode = null;
-		htmlcode = topicpage.downloadpage(stocklistpage);
-		
-		if(htmlcode != null){
-			Parser parser = null;
-			NodeList list = null;
-			Set<String> s = new HashSet<String>();
-			//System.out.println(htmlcode);
-			try {
-				parser =Parser.createParser(htmlcode, "utf-8");
-				parser.setEncoding("utf-8");
-				NodeFilter frameFilter = new LinkRegexFilter("topic,(([6903]0)|(200))");
-				list = parser.extractAllNodesThatMatch(frameFilter);
-				System.out.println(list.size());
-			}catch (ParserException e) {
-				e.printStackTrace();
-			}
-			for (int i = 0; i < list.size(); i++) {
-				TagNode tag = (TagNode) list.elementAt(i);
-				String stock = tag.toPlainTextString();
-			
-				String regex1 = "\\(\\d{6}\\).*?";
-				Pattern pattern = Pattern.compile(regex1);
-				Matcher matcher = pattern.matcher(stock);
-				while(matcher.find()){	
-					s.add(stock);
-				}
-			}
-			System.out.println(s.size());
-			return s;
-		}
-		return null;
-	}
-	
-	//main Thread 
-	void getStock(Set<String> s) {
+	//main Thread
+	@Override
+	public void run(){
+		Set<String> s = GetStockRealData.GetAllStock();
+		if(s!=null){
 		int stocksnumber = 0;
 		Iterator<String> it = s.iterator();
 		MongoDB.initDB("guba");
@@ -112,21 +82,27 @@ public class AllStock {
 			System.out.println("-------------"+new Date()+"-------已爬股票个数："+stocksnumber+"---------------");
 		}
 		MongoDB.close();
+		}
+		else{
+			System.out.println("无法获取股票代码");
+			System.exit(0);
+		}
 	}
 	
 	public static void main(String args[]){
-		while(true){
-			Set<String> s = GetAllStock();	
-//			Set<String> s = new HashSet<String>();
-//			s.add(" 000559万向");
-//			s.add(" 000001平安");
-//			s.add(" 000002万科");
-//			s.add(" 000003金田");
-//			s.add(" 000004国农");
-			if(s != null){
-				AllStock allstock = new AllStock();
-				allstock.getStock(s);
-			}
+		final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd '23:59:00'");
+		 // 首次运行时间
+		Date startTime = null;
+		try {
+			startTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(sdf.format(new Date()));
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		
+		Timer t = new Timer();
+		t.scheduleAtFixedRate(new AllStock(), startTime, 24*60*60*1000);
+		
 	}
+
 }
